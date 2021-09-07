@@ -175,6 +175,6 @@ if __name__ == '__main__':
     ##
     # PROBLEM 4
     ##
-    cpg_islands = cpg_island_detect('data/test_dna2.fasta')
+    cpg_islands = cpg_island_detect('data/test_dna.fasta', verbose=True)
     
     

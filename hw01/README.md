@@ -57,10 +57,11 @@ The following output is achieved when running the above test code
 ```
 
 ## Problem 2
-To plot the function $f(x) = 3xcos^2(x) - 2x$ and its derivative (Eq. 1) I am using the `matplotlib` package here.  
+To plot the function $f(x) = 3xcos^2(x) - 2x$ and its derivative (Eq. 1) I am using the `matplotlib` package here to visual the data.  
 
 ### Equation 1
  $\dfrac{d}{dx} f(x) = \dfrac{d}{dx}[3xcos^2(x) - 2x] = f'(x) = 3cos^2(x) - 6xsin(x)cos(x) - 2$  
+
 
 The following functions were written for $f(x)$ and $f'(x)$ respectively:  
 
@@ -102,11 +103,10 @@ plt.show()
 
 The following plot was generated:
 
-### Figure 1.
 ![Plots of $f(x)$ and $f'(x)$](figs/Figure_1.png)
 
 ## Problem 3
-To plot the equation $A_{v} = \dfrac{Q}{\sqrt{PG}}$  I used a similar approach as in problem 2. A user-defined function was created to calculate the esatimated area of the aortic valve:
+To plot the equation $A_{v} = \dfrac{Q}{\sqrt{PG}}$  I used a similar approach as in problem 2. A user-defined function was created to calculate the estimated area of the aortic valve:
 
 ```python
 def aoritc_valve_area(pg: float, Q: float) -> float:
@@ -146,15 +146,12 @@ plt.show()
 
 This produced the following plots:
 
-### Figure 2
-
-
 
 ![Plots of estimated aortic area v the difference between the left ventricular systolic pressure and the aortic systolic pressure (in mmHg) for $Q = 4$ and $Q = 5$.](figs/Figure_2.png)
 
 
 ## Problem 4
-My lab is highly concerned with gene regulation and how the epigenome contributes to dysregulation and subsequent disease pathologies and progression. Of importance is DNA methylation a phenomenon known as **CpG Islands**. In brief, CpG islands are regions of DNA with a high G+C content and a high frequency of CpG dinucleotides relative to the bulk genome. These islands have great implications on gene expression and regulation. As such, their detection could prove highly useful. A definition for what constitutes a CpG islands was laid out in [@gardiner-gardenCpGIslandsVertebrate1987]. The authors define a CpG island as a sequence "window" that exhibits the following properties:
+My lab is highly concerned with gene regulation and how the epigenome contributes to dysregulation of metabolic pathways and subsequent disease pathologies and progression. One important aspect of epigenetics is DNA methylation and a genetic phenomenon known as **CpG Islands**. In brief, CpG islands are regions of DNA with a high G+C content and a high frequency of CpG dinucleotides relative to the bulk genome. These islands have great implications on gene expression and regulation. They act as control systems for transcription factor modulation and repressor recruitment. As such, their detection and prediction in primary sequences could prove highly useful. A definition for what constitutes a CpG island was laid out by Gardner _et al_ in 1987. The authors define a CpG island as a sequence "window" that exhibits the following properties [@gardiner-gardenCpGIslandsVertebrate1987]:
 
 1. The GC Content of a sequence window must be greater than 50%
 
@@ -230,6 +227,8 @@ def cpg_island_detect(
     return cpg_islands if len(cpg_islands) > 0 else None
 ```
 
+## Running Code:
+![Running Python Code](running_code.png)
 
 
 ## References
