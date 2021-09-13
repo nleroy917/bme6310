@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import svd, inv
@@ -6,10 +7,10 @@ from scipy.linalg import svd, inv
 fig, ax = plt.subplots(1, 3, figsize=(12, 8))
 
 # Read in image
-I = plt.imread('cell.png') # pout.png or cell.png
+I = plt.imread('david.png') # pout.png or cell.png
 # or myster.jpeg --> rgb2gray
 #I = plt.imread("mystery.jpeg")
-#I = np.dot(I[..., :3], [0.299, 0.587, 0.114])  # Converts rgb to grayscale
+I = np.dot(I[..., :3], [0.299, 0.587, 0.114])  # Converts rgb to grayscale
 
 ax[0].imshow(I, cmap='gray')  # Plot image on first subplot
 
@@ -33,4 +34,8 @@ for i in range(len(s)):
 
     fig.canvas.draw()
     print("Waiting for button press...")
-    plt.waitforbuttonpress()  # Wait for button press
+    try:
+        plt.waitforbuttonpress()  # Wait for button press
+    except KeyboardInterrupt:
+        print('Goodbye.')
+        sys.exit(0)
