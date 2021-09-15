@@ -57,6 +57,7 @@ def gaussian_elim(A: npt.ArrayLike, b: npt.ArrayLike, verbose: bool=False) -> np
     # augmented matrix
     if verbose:
         print(aug_A)
+        
     # with a row-reduced matrix, we can back propegate
     # to get the solution set
     # init new array to store solutions

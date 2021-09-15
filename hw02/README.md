@@ -1,4 +1,4 @@
-# BME631 - Homework 2
+# BME631 - Homework 2 - Nathan LeRoy - 09/15/2021
 
 ## Problem 1
 To implement a Gaussian Elimination algorithm in Python, I am employing a similar strategy to that laid out in _Numerical Recipes_ where a matrix is first row reduced to row echelon form, and then a backsweep is calculated to solve the full matrix and find it's corresponding solutions [@criminsNumericalRecipesArt2003] A high level view of my procedure is laid out here in brief:
@@ -101,6 +101,64 @@ Produces the following result:
 ```
 
 ## Problem 2
+To demonstrate the function of my Gaussian function, I am proposing an extremely simple cell model:
+
+A single cell is placed in an abundance of media containing substance **A**. **A** is imported via active transport, but can be modeled via first order reaction kinetics. Once inside, **A** will be converted into **B*** (also via first order kinetics) in addition to slowly and passively _leaking_ out of the cell. This network is described in Fig. 1 below:
+
+![Cell reaction network](figures/cell_network.png)
+
+Using this network we can write out some equations for each of the 3 substances:
+
+$$
+\dfrac{dA_{o}}{dt} = k_{2}A_{i} - k_{1}A_{o}
+$$
+
+$$\dfrac{dA_{i}}{dt} = -(k_{2} + k_{4})A_{i} + k_{1}A_{o} + k_{3}B$$
+
+$$\dfrac{dB}{dt} = k_{3}A_{i} - k_{4}B$$
+
+
+Since our cell is in an abundance of media, we can assume that $[A_{o}]$ is constant and this the top equation can be discarded, and all $A_{o}$ can be replaced with constant values when evaluating. We are interested in the concentration of B in the cell at **_steady-state_** and thus, can set the left side of our equation to 0 while converting to matrix form:
+
+$$
+\begin{bmatrix}
+    -(k_{2} + k_{4}) & k_{3}\\
+    0 & k_{3} & -k_{4}
+\end{bmatrix}
+\begin{bmatrix}
+   A_{i} \\ B
+\end{bmatrix}
+=
+\begin{bmatrix}
+    k_{1}A_{o} \\ 0
+\end{bmatrix}
+$$
+
+Setting the following values for our reaction constants:
+
+$k_{1} = 1$
+$k_{2} = 0.001$
+$k_{3} = 10$
+$k_{4} = 0.1$
+$[A_{0}] = 10 mMol$
+
+We can now substitute into out above matrix and solve for the steady-state values of $A_{o}$, $A_{i}$, and $B$:
+
+$$
+\begin{bmatrix}
+    -0.1001 & 10\\
+    10 & 0.1
+\end{bmatrix}
+\begin{bmatrix}
+    A_{i} \\ B
+\end{bmatrix}
+=
+\begin{bmatrix}
+    10 \\ 0
+\end{bmatrix}
+$$
+
+Plugging into the Gaussian elimination algorithm I wrote in [Problem 1](#Problem 1) we can see that $[B]$ inside our cell at steady state is 1 mMol.
 
 ## Problem 3
 The rank of a matrix is directly related to the solution set of the system. The rank of a matrix $A$ corresponds to the number of **linearly independent** columns in $A$. This, in turn, is identical to the dimension of the vector space spanned by the **rows** of $A$. Thus a matrix which is **full rank**, or one where the number of rows, $n$, is equal to $rank(A)$ will have exactly one solution. This is because there are 3 unique linear equations given for 3 unknowns. 
@@ -152,6 +210,7 @@ A^{*} =
     -3 & 2 & 5 &\bigm| & 0
 \end{bmatrix}
 $$
+
 
 Row reduced we achieve the following:
 
@@ -281,23 +340,99 @@ $$
 \end{bmatrix}
 $$
 
-We can see that the rank of $A$ is equal to 1. This is because $C_{1}$ is just $-2C_{2}$. This is consistent with our $S$ matrix which shows that we only have one singular value which corresponds to the rank of A. As well, we can take the bottom row of $V^{T}$ to give us a basis in $nul(A)$:
+We can see that the rank of $A$ is equal to 1. This is because $C_{1}$ is just $-2C_{2}$. This is consistent with our $S$ matrix which shows that we only have one singular value which corresponds to the rank of $A$. Using this, we can find a basis for the four fundamental spaces of $A$:
+
+$$
+ColA: \begin{bmatrix} -0.89 & -0.48 & 0 \end{bmatrix} \newline
+RowA: \begin{bmatrix} -0.89 & 0.45 \end{bmatrix} \newline
+nul(A): \begin{bmatrix} 0.45 & 0.89\end{bmatrix} \newline
+nul(A^{T}): \begin{bmatrix} 0 & 0 & 1 \end{bmatrix}
+$$
+
+### $Col(A)$ 
+If we multiply $Col(A)$ basis by a scalar of $2/0.89$:
+
+$\dfrac{2}{0.89}\begin{bmatrix} -0.89 & -0.48 & 0 \end{bmatrix} = \begin{bmatrix} -2 & -1.07 & 0 \end{bmatrix}$ which can be approximated as $\begin{bmatrix} -2 & -1 & 0 \end{bmatrix}$ (rounding errors probably due to floating point arithmetic).
+
+We can see that this is directly the second column of $A$.
+
+### $Row(A)$
+If we multiply $Row(A)$ basis by a scalar of $-4/0.89$:
+
+$\dfrac{-4}{0.89}\begin{bmatrix} -0.89 & 0.45 \end{bmatrix} = \begin{bmatrix} 4 &  -2.022 \end{bmatrix}$ which can be approximated as $\begin{bmatrix} 4 & -2 \end{bmatrix}$ (rounding errors probably due to floating point arithmetic).
+
+We can see that this is directly the first row of $A$
+
+### $Nul(A)$
+We can substitute in our found null space basis for $x$ into the equation:
+
+$Ax=0$
+
+to see how this is a valid basis.
 
 $$
 \begin{bmatrix}
- 0.45 & 0.89
+    4 & -2 \\
+    2 & -1 \\
+    0 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+    0.45 \\ 0.89
+\end{bmatrix}
+=
+\begin{bmatrix}
+    1.8 - 1.78 \\ 0.9 - 0.89 \\ 0 - 0 
+\end{bmatrix}
+=
+\begin{bmatrix}
+    0.02 \\ 0.01 \\ 0 
 \end{bmatrix}
 $$
 
-As well, as basis for $nul(A^{T}$) can be given by the rightmost column of the $U$ matrix:
+which ca be approximated as
 
-$$ 
-\begin{bmatrix} 0 & 0 & 1 \end{bmatrix}
+$\begin{bmatrix} 0, 0, 0 \end{bmatrix}$
+
+Which is precisely the nullspace of A.
+
+### $Nul(A^{T})$
+
+We can substitute in our found null space basis for $x$ into the equation:
+
+$A^{T}x=0$
+
+to see how this is a valid basis.
+
+$$
+\begin{bmatrix}
+ 4 & 2 & 0 \\
+ -2 & -1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+    0 \\ 0 \\ 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+   0-0 \\ 0-0 \\ 0-0
+\end{bmatrix}
+=
+\begin{bmatrix}
+  0 \\ 0 \\ 0
+\end{bmatrix}
 $$
 
-Employing a similar strategy to that in [Problem 4](#Problem 4), we can row reduce the augmented matrices given by the equation to $Ax=0$ and $A^{T}x=0$ to find a parametrized nullspace.
+## Problem 6
+For the PCA analysis, I downloaded a tumor cell image analysis data-dump online. The data set had 32 features, 2 of which were dropped during cleaning for simplicity (diagnosis and id). A PCA was performed using the `sklearn` package. After cleaning, scaling, and transforming, the following explained variances were calculated with my dataset. I am only investigating the first **10** principle components of the data for easier visual understanding.
 
+![PC distribution for top 10 components](./figs/Figure_1.png)
 
+As well, I created a 2D plot of the first two Principle Components (PC1 and PC2) as a scree plot:
 
+![Scree plot of first two principle components](./figs/Figure_2.png)
+
+We can see from the first bar graph that precisely 63.3% of our data variance is captured within the first two principle components. Upon inspection of the coefficient matrix of my PCA output, we can see that the `concave_points mean`  has the highest weight associated with PC1. I think it would depend on the exact experimental procedure carried out when imaging the tumor cells, however I could see how cells that which are proliferating at an exensible rate would offer high variation in terms of image concavity. As well, tumor cells offer lost of cytoskeletal dysregulation which could present a highly variable cell-shape.
+
+## Screenshots
+![Screenshot of code running for relevant problems](./figs/code_screenshots.png)
 
 ## References
