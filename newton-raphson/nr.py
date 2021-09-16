@@ -7,7 +7,7 @@ def _derivative(func, x: float, dx: float = 0.001) -> float:
     """
     return (func(x + dx) - func(x))/((x+dx) - x)
 
-def hill(x: float, n: int=2) -> float:
+def hill(x: float, n: int = 2) -> float:
     """
     Evaluate the hill equation at certain x
     """
@@ -17,7 +17,7 @@ def newton_raphson(func, x: float, tolerance: float = 0.001) -> float:
     """
     Use newton raphson method to estimate the root of an equation
     """
-    # calculate the error
+    # estimate zero
     h = func(x) / _derivative(func, x)
     
     # while error greater than tolerance
@@ -30,6 +30,8 @@ def newton_raphson(func, x: float, tolerance: float = 0.001) -> float:
 if __name__ == '__main__':
     root = newton_raphson(hill, 1.5)
     print(f"The root was found to be: {root}")
+    
+    # plot the function
     x_min = 0
     x_max = 4
     x_vals = np.linspace(x_min, x_max, num=1000)
