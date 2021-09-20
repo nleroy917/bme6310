@@ -5,7 +5,7 @@ def _derivative(func, x: float, dx: float = 0.001) -> float:
     """
     Estimate the derivative of a function at a given x
     """
-    return (func(x + dx) - func(x))/((x+dx) - x)
+    return (func(x + dx) - func(x))/(dx)
 
 def hill(x: float, n: int = 2) -> float:
     """
@@ -17,7 +17,7 @@ def newton_raphson(func, x: float, tolerance: float = 0.001) -> float:
     """
     Use newton raphson method to estimate the root of an equation
     """
-    # estimate zero
+    # estimate zero / calculate error
     h = func(x) / _derivative(func, x)
     
     # while error greater than tolerance
