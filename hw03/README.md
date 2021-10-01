@@ -83,7 +83,12 @@ Which produces:
 Predicted max heart rate: 141 bps
 ```
 
-This is not too far off from the actual value of 150bps demonstrating that our model **_could potentially_** be valuable and accurate. A lot more testing would be required, however.
+This is not too far off from the actual value of 150bps demonstrating that our model **_could potentially_** be valuable and accurate. A lot more testing would be required, however. Here are some residual plots:
+
+![Residual plots for our generated multi-linear regression model](figs/residuals.png)
+
+We can see that the model is definitely not perfect.. and we occasionally get pretty far from our true max heart rate value.
+
 
 ## Problem 3
 ### The data
@@ -203,7 +208,9 @@ We can see from the above plot that our model is a very nice fit to our data! Th
 
 ## Problem 4
 To run the decimation and interpolation process, I will be using an image of my cat, Karen:
-![Reference image for decimation – Karen the Cat](./data/karen.png)
+
+![Reference image for decimation – Karen the Cat](./data/karen.jpg)
+
 
 First we must load in the image, and create a new matrix to store our decimated "sparse" image"
 
@@ -261,7 +268,7 @@ As expected, as the decimation factor increases, the picture of Karen becomes mo
 To calculate the steepest descent, lets first calculate the gradient of the function $f(x)$:
 
 $$
-f(x) = x_{1}^{2} + 2x_{2}^{2} – x_{1} – 6x_{2}2
+f(x) = x_{1}^{2} + 2x_{2}^{2} – x_{1} – 6x_{2}
 $$
 
 $$
@@ -373,6 +380,12 @@ $$
 x_{2_{new}} = x_{0} + \dfrac{\partial f}{\partial x_{2}}h = 1.5 + 0h = 1.5
 $$
 
+Plugging into our original function,
+
+$$
+f(x) =(0.5)^{2} + 2(1.5)^{2} – 0.5 – 6(1.5) = -4.75
+$$
+
 We can verify this result using an optimization package in python:
 
 ```python
@@ -394,7 +407,216 @@ Optimization terminated successfully.
 array([0.50001601, 1.50002605])
 ```
 
-Which we can see is almost precisely the values we achieved analytically.
+Which we can see is almost precisely the values we achieved with steepest descent.
+
+## Problem 6
+I am going to use [Wolfram Alpha's](https://www.wolframalpha.com/widgets/view.jsp?id=895957d708a52242400f57757f81e627) constrained optimization web app to optimize the following function:
+
+$$
+f(x) = 2x_{1} + 3x_{2} + x_{3}
+$$
+
+Subject to the following constraints,
+
+$$
+x_{1} + x_{2} + x_{3} \leq 4.8
+$$
+$$
+10x_{1} + x_{3} \leq 9.9
+$$
+$$
+x_{2} - x_{3} \leq 0.2
+$$
+
+
+Wolfram alpha found the global maximum to be **9.8** at **(x,y,z) = (0, 2.5, 2.3)**. We can see that this satisfies the constraints:
+
+$$
+0 + 2.5 + 2.3 = 4.8 \leq 4.8
+$$
+$$
+10(0) + 2.3 = 2.3 \leq 9.9
+$$
+$$
+2.5 - 2.3 = 0.2 \leq 0.2
+$$
+
+We can also try to perturb the system variables within the constraints to demonstrate it moves us away from the maximum:
+
+### Perturb $x_{1}$
+Let $x_{1}$ = -1
+
+We are still within the constraints:
+$$
+-1 + 2.5 + 2.3 = 3.8 \leq 4.8
+$$
+$$
+10(-1) + 2.3 = -7.7 \leq 9.9
+$$
+$$
+2.5 - 2.3 = 0.2 \leq 0.2
+$$
+
+The new function value:
+
+$$
+f(x) = 2(-1) + 3(2.5) + 2.3 = 7.8
+$$
+
+which is lower than the previous maximum.
+
+### Perturb $x_{2}$
+Let $x_{2}$ = -1:
+
+We are still within the constraints:
+$$
+0 + -1 + 2.3 = 1.3 \leq 4.8
+$$
+$$
+10(0) + 2.3 = 2.3 \leq 9.9
+$$
+$$
+0 - 2.3 = -3.3 \leq 0.2
+$$
+
+The new function value:
+
+$$
+f(x) = 2(0) + 3(-1) + 2.3 = 0.7
+$$
+
+which is lower than the previous maximum.
+
+## Problem 7
+To solve this constrained optimization problem in Python, I am using the `scipy.optimize` `linprog` function. The following code was used to run the optimization:
+
+```python
+# function coeffs
+f = -1*np.array([[2], [3], [1]])
+
+# constraint coeffs
+constraint_coeffs = np.array([
+    [1, 1, 1],
+    [10, 0 ,1],
+    [0, 1, -1]
+])
+
+# upper bounds
+# ... <= bound
+upper_bounds = np.array([
+    4.8,
+    9.9,
+    0.2
+])
+
+res = linprog(f, A_ub=constraint_coeffs, b_ub=upper_bounds)
+```
+
+The following output is achieved:
+
+```
+The maximum value was found to be 9.799999999985156
+Our function values were found to be: [0.66754125 2.16622938 1.96622938\]
+```
+
+The maximum is almost identical to the original value we saw using **Wolfram Alpha**.
+
+
+We can now iterate over the optimization function code to survey how our maximum value changes as we vary the constraints. The following loop was made to vary the first constraint from **1 to 10**:
+
+```python
+for i in range(1,11):
+    upper_bounds[0] = i
+    res = linprog(f, A_ub=constraint_coeffs, b_ub=upper_bounds)
+    print(f"First constraint <= {i}")
+    print(f"The maximum value was found to be {abs(res.fun)}")
+    print(f"Our function values were found to be: {-1*res.x}")
+    print("-="*20)
+```
+
+Which produces the (very long) output:
+
+```
+First constraint <= 1
+The maximum value was found to be 2.200000001701729
+Our function values were found to be: [-0.61566885 -0.29216557 -0.09216557]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+First constraint <= 2
+The maximum value was found to be 4.200000000018904
+Our function values were found to be: [-0.83611454 -0.68194273 -0.48194273]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+First constraint <= 3
+The maximum value was found to be 6.200000000007946
+Our function values were found to be: [-0.77811795 -1.21094102 -1.01094102]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+First constraint <= 4
+The maximum value was found to be 8.200000000006241
+Our function values were found to be: [-0.7166718 -1.7416641 -1.5416641]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+First constraint <= 5
+The maximum value was found to be 10.199999999979102
+Our function values were found to be: [-0.65528067 -2.27235967 -2.07235967]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+First constraint <= 6
+The maximum value was found to be 12.199999999950952
+Our function values were found to be: [-0.59314323 -2.80342838 -2.60342838]
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+```
+
+The maximum value steadily increases as we run this constraint.
+
+## Problem 8
+We can use the optimization techniques to maximize profit given cost and demand functions for any given price that we set for a product. We determine the **total cost** ($TC$) of our product to be defined by the following function:
+
+$$
+TC(y) = 200y + 15y^{2}
+$$
+
+Where $y$ is the price of our product. Then we can determine the demand curve for our product given any price $y$:
+
+$$
+D = 1200 - 10y^{3}
+$$
+
+
+The total revenue we make then, as a function of price is going to be:
+
+$$
+TR(y) = (Demand) \times (Price) = Dy = (1200 - 10y^{3})y = 1200y - 10y^{4}
+$$
+
+We can then arrange a total **profit** function to be:
+
+$$
+TP(y) = TR(y) - TC(y) = (1200y - 10y^4) - (200y + 15y^{2}) = 1000y - 15y^{3} - 10y^{4}
+$$
+
+
+We can take the derivative of the revenue function to maximize it:
+
+$$
+\dfrac{dP}{dy} = 1000 - 45y^{2} - 40y^{3} = 0
+$$
+
+Plugging this into my pre-written newton-raphson algorithm:
+
+```python
+from nr import *
+
+def marg_profit(x: float) -> float:
+    return 1000 - 45*x**2 - 40*x**3
+
+res = newton_raphson(marg_profit, 4)
+print(f"The monopolist should price his magic beans at {res} schmeckles per bean")
+```
+
+We receive the following output:
+
+```
+We should price our product at 2.59 schmeckles per unit
+```
+
+The **optimal price** that maximizes our profit is **2.59** USD/EUR/Schmeckles
 
 ## Problem 9
 Below is my Newton-Raphson algorithm implemented in Python:
