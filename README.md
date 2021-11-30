@@ -9,6 +9,9 @@ My solutions, code, and writeups for all assignments in the course BME 6310 at t
 [hw04](/hw04)  
 [hw05](/hw05)  
 [hw06](/hw06)  
+[hw07](/hw07)  
+[hw08](/hw08)  
+[hw09](/hw09)
 
 ## Academic Integrity
 I default to UVA's [honor policy](https://honor.virginia.edu/overview) in regards to the sharing and usage of this code outside my own pursuit and completion of this course. This code was **not** ever shared in any capacity to any individuals during present or future semesters for the purpose of gaining an advantage in said course.
